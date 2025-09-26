@@ -14,25 +14,42 @@ export function BottomNavigation() {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 safe-area-pb">
+    <nav className="fixed bottom-0 left-0 right-0 glass-effect border-t border-border/30 z-50 pb-safe-bottom">
       <div className="flex items-center justify-around h-16 px-2">
-        {navigation.map((item) => {
+        {navigation.map((item, index) => {
           const isActive = location.pathname === item.href;
           return (
             <NavLink
               key={item.name}
               to={item.href}
               className={cn(
-                "flex flex-col items-center justify-center min-w-[60px] h-12 px-2 rounded-lg transition-all duration-200",
+                "flex flex-col items-center justify-center mobile-touch-target px-3 rounded-xl transition-all duration-300 transform relative group",
                 isActive
-                  ? "text-primary bg-primary-soft"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  ? "text-primary bg-primary-soft shadow-lg scale-105"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/80 hover:scale-105"
               )}
+              style={{
+                animationDelay: `${index * 100}ms`
+              }}
             >
-              <item.icon className={cn("h-5 w-5 mb-1", isActive && "text-primary")} />
-              <span className={cn("text-xs font-medium", isActive && "text-primary")}>
+              {isActive && (
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary-glow/10 rounded-xl animate-pulse-glow" />
+              )}
+              <item.icon 
+                className={cn(
+                  "h-5 w-5 mb-1 transition-all duration-300 relative z-10",
+                  isActive ? "text-primary drop-shadow-sm" : "group-hover:scale-110"
+                )} 
+              />
+              <span className={cn(
+                "text-xs font-medium relative z-10 transition-all duration-300",
+                isActive ? "text-primary text-shadow" : "group-hover:font-semibold"
+              )}>
                 {item.name}
               </span>
+              {isActive && (
+                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full animate-bounce-in" />
+              )}
             </NavLink>
           );
         })}

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MessageSquare, Calendar, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface QueueItem {
   id: string;
@@ -58,42 +59,60 @@ const getPriorityColor = (priority: QueueItem["priority"]) => {
 export function ActionQueue() {
   return (
     <Card className="card-gradient">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold">Actions en attente</CardTitle>
+      <CardHeader className="pb-4">
+        <CardTitle className="heading-md text-gradient">Actions en attente</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {mockItems.map((item) => {
+      <CardContent className="space-y-4">
+        {mockItems.map((item, index) => {
           const Icon = getIcon(item.type);
           return (
             <div 
               key={item.id}
-              className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+              className="interactive-card p-4 rounded-xl border border-border/50 hover:bg-muted/50 group overflow-hidden relative animate-fade-in"
+              style={{
+                animationDelay: `${index * 150}ms`
+              }}
             >
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
-                  <Icon className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {item.title}
-                    </p>
-                    <Badge 
-                      className={`text-xs ${getPriorityColor(item.priority)}`}
-                    >
-                      {item.priority}
-                    </Badge>
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-soft to-primary/20 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+                    <Icon className="h-5 w-5 text-primary group-hover:text-primary-glow transition-colors duration-300" />
                   </div>
-                  <p className="text-xs text-muted-foreground">{item.subtitle}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <p className="body-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors duration-300">
+                        {item.title}
+                      </p>
+                      <Badge 
+                        className={cn(
+                          "text-xs transition-all duration-300 hover:scale-105",
+                          getPriorityColor(item.priority)
+                        )}
+                      >
+                        {item.priority}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-1">{item.subtitle}</p>
+                    <p className="text-xs text-muted-foreground font-medium">{item.time}</p>
+                  </div>
                 </div>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="mobile-touch-target text-primary hover:text-primary-foreground hover:bg-primary transition-all duration-300 hover:scale-105 relative z-10"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
               </div>
-              <Button size="sm" variant="ghost" className="text-primary hover:text-primary">
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
           );
         })}
+        {mockItems.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground animate-fade-in">
+            <p className="body-sm">Aucune action en attente</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
