@@ -1,0 +1,2 @@
+-- Remove default templates from previous migration that failed
+-- Default templates will be created when the first user signs up

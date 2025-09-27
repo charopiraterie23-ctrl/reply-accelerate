@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Play, Clock, CheckCircle, MessageSquare } from "lucide-react";
+import { CallSummaryWizard } from "@/components/calls/CallSummaryWizard";
+import { Plus, Play, Clock, CheckCircle, MessageSquare, Wand2 } from "lucide-react";
 
 interface Call {
   id: string;
@@ -73,6 +74,8 @@ const getOutcomeEmoji = (outcome: Call["outcome"]) => {
 };
 
 export default function Calls() {
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+
   return (
     <div className="p-4 space-y-6 animate-slide-up">
       {/* Header */}
@@ -81,10 +84,19 @@ export default function Calls() {
           <h1 className="text-2xl font-bold text-foreground">Appels</h1>
           <p className="text-muted-foreground">Historique et résumés d'appels</p>
         </div>
-        <Button className="btn-primary">
-          <Plus className="h-4 w-4 mr-2" />
-          Nouvel appel
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => setIsWizardOpen(true)}
+            className="btn-primary"
+          >
+            <Wand2 className="h-4 w-4 mr-2" />
+            Assistant Résumé
+          </Button>
+          <Button variant="outline">
+            <Plus className="h-4 w-4 mr-2" />
+            Nouvel appel
+          </Button>
+        </div>
       </div>
 
       {/* Quick Stats */}
@@ -154,6 +166,11 @@ export default function Calls() {
           );
         })}
       </div>
+
+      <CallSummaryWizard
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+      />
     </div>
   );
 }

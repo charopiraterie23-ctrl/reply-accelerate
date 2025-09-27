@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Users, Phone, MessageSquare, BarChart3 } from "lucide-react";
+import { Home, Users, Phone, MessageSquare, BarChart3, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -7,7 +7,8 @@ const navigation = [
   { name: "Clients", href: "/clients", icon: Users },
   { name: "Appels", href: "/appels", icon: Phone },
   { name: "Suivi", href: "/suivi", icon: MessageSquare },
-  { name: "Analytique", href: "/analytique", icon: BarChart3 },
+  { name: "Templates", href: "/templates", icon: FileText },
+  { name: "Analytics", href: "/analytique", icon: BarChart3 },
 ];
 
 export function BottomNavigation() {
