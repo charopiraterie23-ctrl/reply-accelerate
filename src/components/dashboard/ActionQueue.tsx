@@ -3,6 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MessageSquare, Calendar, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useNavigate } from "react-router-dom";
 
 interface QueueItem {
   id: string;
@@ -12,33 +16,6 @@ interface QueueItem {
   time: string;
   priority: "high" | "medium" | "low";
 }
-
-const mockItems: QueueItem[] = [
-  {
-    id: "1",
-    type: "summary",
-    title: "Résumé prêt - TechCorp Inc.",
-    subtitle: "Appel découverte avec Marie Dubois",
-    time: "Il y a 5 minutes",
-    priority: "high"
-  },
-  {
-    id: "2", 
-    type: "followup",
-    title: "Relance en attente - StartupXYZ",
-    subtitle: "Proposition pricing envoyée",
-    time: "Dans 2 heures",
-    priority: "medium"
-  },
-  {
-    id: "3",
-    type: "meeting",
-    title: "Démonstration prévue",
-    subtitle: "Rendez-vous avec Innovate Co.",
-    time: "Demain 14h30",
-    priority: "high"
-  }
-];
 
 const getIcon = (type: QueueItem["type"]) => {
   switch (type) {
@@ -57,13 +34,29 @@ const getPriorityColor = (priority: QueueItem["priority"]) => {
 };
 
 export function ActionQueue() {
+  const { followUps } = useDashboardData();
+  const navigate = useNavigate();
+
+  const items: QueueItem[] = followUps.map(fu => ({
+    id: fu.id,
+    type: fu.type === "email" ? "followup" : fu.type === "meeting" ? "meeting" : "summary",
+    title: `${fu.type === "email" ? "Email" : fu.type === "call" ? "Appel" : "Réunion"} - ${fu.client?.name || "Client"}`,
+    subtitle: fu.content?.substring(0, 60) || "Aucune note",
+    time: fu.scheduled_at 
+      ? formatDistanceToNow(new Date(fu.scheduled_at), { locale: fr, addSuffix: true })
+      : "Non planifié",
+    priority: fu.scheduled_at && new Date(fu.scheduled_at) < new Date(Date.now() + 24 * 60 * 60 * 1000)
+      ? "high"
+      : "medium",
+  }));
+
   return (
     <Card className="card-gradient">
       <CardHeader className="pb-4">
         <CardTitle className="heading-md text-gradient">Actions en attente</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {mockItems.map((item, index) => {
+        {items.map((item, index) => {
           const Icon = getIcon(item.type);
           return (
             <div 
@@ -99,6 +92,7 @@ export function ActionQueue() {
                 <Button 
                   size="sm" 
                   variant="ghost" 
+                  onClick={() => navigate("/follow-up")}
                   className="mobile-touch-target text-primary hover:text-primary-foreground hover:bg-primary transition-all duration-300 hover:scale-105 relative z-10"
                 >
                   <ArrowRight className="h-4 w-4" />
@@ -108,9 +102,10 @@ export function ActionQueue() {
             </div>
           );
         })}
-        {mockItems.length === 0 && (
+        {items.length === 0 && (
           <div className="text-center py-8 text-muted-foreground animate-fade-in">
             <p className="body-sm">Aucune action en attente</p>
+            <p className="text-xs mt-2">Les suivis apparaîtront ici</p>
           </div>
         )}
       </CardContent>
